@@ -1,0 +1,16 @@
+@page "/shell/configuration"
+@attribute [Authorize(Policy = "InternalShell")]
+@rendermode InteractiveServer
+@layout ShellLayout
+
+<PageTitle>Configuration — StillOps</PageTitle>
+
+<section class="shell-page" aria-labelledby="page-heading">
+    <h1 id="page-heading" class="page-heading">Configuration</h1>
+
+    <p class="placeholder-note">
+        The starter runtime configuration editor is implemented in Story 1.5.
+        Settings are backed by <code>stillops-operational-settings.json</code> with
+        reload-capable binding — changes take effect without restarting the application.
+    </p>
+</section>

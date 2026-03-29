@@ -1,0 +1,43 @@
+@page
+@model StillOps.Web.Pages.LoginModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In — StillOps</title>
+    <link rel="stylesheet" href="~/app.css" asp-append-version="true" />
+</head>
+<body>
+<main class="login-page">
+    <div class="login-card">
+        <h1 class="login-title">StillOps</h1>
+        <h2 class="login-subtitle">Internal Workspace</h2>
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <div asp-validation-summary="ModelOnly" class="login-error" role="alert"></div>
+
+            <div class="form-field">
+                <label asp-for="Input.Username">Username</label>
+                <input asp-for="Input.Username" type="text" autocomplete="username" autofocus required />
+                <span asp-validation-for="Input.Username" class="field-error"></span>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="Input.Password">Password</label>
+                <input asp-for="Input.Password" type="password" autocomplete="current-password" required />
+                <span asp-validation-for="Input.Password" class="field-error"></span>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

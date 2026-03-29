@@ -1,0 +1,16 @@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                @* The cookie auth middleware handles the redirect to /login for unauthenticated users.
+                   This NotAuthorized slot handles the case of authenticated-but-unauthorized access. *@
+                <section aria-labelledby="access-denied-heading">
+                    <h1 id="access-denied-heading">Access Denied</h1>
+                    <p>You do not have permission to view this page.</p>
+                    <a href="/shell">Return to workspace home</a>
+                </section>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

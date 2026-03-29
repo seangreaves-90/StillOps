@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/entrypoints/">
+    <Project Path="src/entrypoints/StillOps.Ingestion/StillOps.Ingestion.csproj" />
+    <Project Path="src/entrypoints/StillOps.Web/StillOps.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/hosting/">
+    <Project Path="src/hosting/StillOps.AppHost/StillOps.AppHost.csproj" />
+    <Project Path="src/hosting/StillOps.ServiceDefaults/StillOps.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/integration/">
+    <Project Path="tests/integration/StillOps.AppHost.IntegrationTests/StillOps.AppHost.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

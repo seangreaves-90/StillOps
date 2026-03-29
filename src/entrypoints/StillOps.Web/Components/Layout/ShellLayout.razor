@@ -1,0 +1,48 @@
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+
+<div class="shell-wrapper">
+    <nav class="shell-rail" aria-label="Primary navigation">
+        <div class="shell-brand" aria-label="StillOps">
+            <span class="brand-name">StillOps</span>
+        </div>
+        <ul class="shell-nav-list" role="list">
+            <li>
+                <NavLink class="shell-nav-link" href="/shell" Match="NavLinkMatch.All" aria-current="page">
+                    Home
+                </NavLink>
+            </li>
+            <li>
+                <NavLink class="shell-nav-link" href="/shell/health" Match="NavLinkMatch.Prefix">
+                    Health
+                </NavLink>
+            </li>
+            <li>
+                <NavLink class="shell-nav-link" href="/shell/configuration" Match="NavLinkMatch.Prefix">
+                    Configuration
+                </NavLink>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="shell-content">
+        <header class="shell-header">
+            <div class="shell-identity">
+                <AuthorizeView>
+                    <Authorized>
+                        <span class="signed-in-name" aria-label="Signed in as @context.User.Identity?.Name">
+                            @context.User.Identity?.Name
+                        </span>
+                        <form method="post" action="/logout" class="signout-form">
+                            <button type="submit" class="btn-signout">Sign Out</button>
+                        </form>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </header>
+
+        <main class="shell-main" id="main-content" tabindex="-1">
+            @Body
+        </main>
+    </div>
+</div>

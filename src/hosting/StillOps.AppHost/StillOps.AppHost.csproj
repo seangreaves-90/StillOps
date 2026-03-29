@@ -1,0 +1,13 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.2.0">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>6e635df9-9843-44a4-b0b4-644504ba962f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\entrypoints\StillOps.Web\StillOps.Web.csproj" IsAspireProjectResource="true" />
+    <ProjectReference Include="..\..\entrypoints\StillOps.Ingestion\StillOps.Ingestion.csproj" IsAspireProjectResource="true" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+@page "/shell/health"
+@attribute [Authorize(Policy = "InternalShell")]
+@rendermode InteractiveServer
+@layout ShellLayout
+
+<PageTitle>Health — StillOps</PageTitle>
+
+<section class="shell-page" aria-labelledby="page-heading">
+    <h1 id="page-heading" class="page-heading">Platform Health</h1>
+
+    <p class="placeholder-note">
+        Health monitoring UI is implemented in Story 1.4.
+        The starter health checks are already registered and available at
+        <code>/health</code> and <code>/alive</code> in the development environment.
+    </p>
+</section>

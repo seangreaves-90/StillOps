@@ -1,0 +1,14 @@
+{
+  "StarterSettings": {
+    "SensorWarningThresholds": {
+      "TemperatureCelsius": 85.0,
+      "HumidityPercent": 80.0,
+      "AbvPercent": 95.0
+    },
+    "SensorHeartbeatTimeoutSeconds": 30,
+    "StarterAlertingRules": {
+      "AlertOnMissedHeartbeats": true,
+      "AlertOnThresholdExceedance": true
+    }
+  }
+}
