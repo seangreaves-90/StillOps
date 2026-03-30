@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\hosting\StillOps.ServiceDefaults\StillOps.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\shared\StillOps.BuildingBlocks\StillOps.BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\shared\StillOps.Web.Shared\StillOps.Web.Shared.csproj" />
     <ProjectReference Include="..\..\modules\Distillery\StillOps.Distillery.Api\StillOps.Distillery.Api.csproj" />
     <ProjectReference Include="..\..\modules\Commerce\StillOps.Commerce.Api\StillOps.Commerce.Api.csproj" />

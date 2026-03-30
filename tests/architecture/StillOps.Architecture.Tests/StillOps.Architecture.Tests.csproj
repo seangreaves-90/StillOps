@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\entrypoints\StillOps.Web\StillOps.Web.csproj" />
     <ProjectReference Include="..\..\..\src\shared\StillOps.BuildingBlocks\StillOps.BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\..\src\shared\StillOps.Integration.Events\StillOps.Integration.Events.csproj" />
     <ProjectReference Include="..\..\..\src\modules\Distillery\StillOps.Distillery.Domain\StillOps.Distillery.Domain.csproj" />

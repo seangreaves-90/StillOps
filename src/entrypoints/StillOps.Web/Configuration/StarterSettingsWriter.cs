@@ -2,6 +2,7 @@ using System.Text.Json;
 
 using Microsoft.Extensions.Options;
 
+using StillOps.BuildingBlocks.Time;
 using StillOps.ServiceDefaults.Configuration;
 
 namespace StillOps.Web.Configuration;
@@ -156,7 +157,9 @@ public interface IStarterSettingsWriter
 // ── Writer implementation ─────────────────────────────────────────────────────
 
 /// <inheritdoc cref="IStarterSettingsWriter"/>
-public sealed class StarterSettingsWriter(IOptions<StarterSettingsWriterOptions> options) : IStarterSettingsWriter
+public sealed class StarterSettingsWriter(
+    IOptions<StarterSettingsWriterOptions> options,
+    IDateTimeProvider dateTimeProvider) : IStarterSettingsWriter
 {
     private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
 
@@ -173,7 +176,7 @@ public sealed class StarterSettingsWriter(IOptions<StarterSettingsWriterOptions>
             return SaveResult.Failure("One or more fields are invalid. No changes were saved.");
         }
 
-        DateTimeOffset savedAtUtc = DateTimeOffset.UtcNow;
+        DateTimeOffset savedAtUtc = dateTimeProvider.UtcNow;
 
         // Build the JSON payload preserving the existing section key name.
         var payload = new

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 
+using StillOps.BuildingBlocks.Time;
 using StillOps.ServiceDefaults.Configuration;
 using StillOps.Web.Configuration;
 
@@ -20,7 +21,12 @@ public sealed class StarterSettingsConfigurationTests
     // ── Helper ──────────────────────────────────────────────────────────────────
 
     private static StarterSettingsWriter CreateWriter(string filePath) =>
-        new(Options.Create(new StarterSettingsWriterOptions { FilePath = filePath }));
+        new(Options.Create(new StarterSettingsWriterOptions { FilePath = filePath }),
+            new SystemDateTimeProvider());
+
+    private static StarterSettingsWriter CreateWriter(string filePath, IDateTimeProvider dateTimeProvider) =>
+        new(Options.Create(new StarterSettingsWriterOptions { FilePath = filePath }),
+            dateTimeProvider);
 
     private static StarterSettingsFormModel ValidModel() => new()
     {
@@ -326,6 +332,37 @@ public sealed class StarterSettingsConfigurationTests
 
     // ── AC 3 — Saved metadata is readable from the active runtime settings ───────
 
+    // ── AC 2, 3 — Deterministic time via IDateTimeProvider ────────────────────
+
+    /// <summary>
+    /// AC 2, 3, BuildingBlocks bridge — SaveAsync stamps metadata using the injected
+    /// IDateTimeProvider rather than DateTimeOffset.UtcNow, proving the shared time
+    /// abstraction from StillOps.BuildingBlocks is actually consumed at runtime.
+    /// A fixed-time provider lets the test assert an exact timestamp.
+    /// </summary>
+    [Fact]
+    public async Task SaveAsync_WithFixedTimeProvider_StampsExactTimestamp()
+    {
+        string filePath = Path.GetTempFileName();
+        try
+        {
+            var fixedTime = new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero);
+            var writer = CreateWriter(filePath, new FakeDateTimeProvider(fixedTime));
+
+            SaveResult result = await writer.SaveAsync(ValidModel(), "bridge-test");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(fixedTime, result.SavedAtUtc);
+
+            var json = await File.ReadAllTextAsync(filePath);
+            Assert.Contains("2026-06-15", json, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
     /// <summary>
     /// AC 3 — After a successful save, the written JSON file carries LastUpdatedUtc and
     /// LastUpdatedBy under the StarterSettings section. When deserialized via the
@@ -363,6 +400,13 @@ public sealed class StarterSettingsConfigurationTests
         {
             File.Delete(filePath);
         }
+    }
+
+    // ── Test doubles ────────────────────────────────────────────────────────────
+
+    private sealed class FakeDateTimeProvider(DateTimeOffset fixedUtcNow) : IDateTimeProvider
+    {
+        public DateTimeOffset UtcNow => fixedUtcNow;
     }
 
     private static string ExtractAntiforgeryToken(string html)

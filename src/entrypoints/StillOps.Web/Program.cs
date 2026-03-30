@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OpenIddict.Validation.AspNetCore;
 
+using StillOps.BuildingBlocks.Time;
 using StillOps.ServiceDefaults;
 using StillOps.Web.Components;
 using StillOps.Web.Configuration;
@@ -144,6 +145,12 @@ string settingsWritePath =
 
 builder.Services.Configure<StarterSettingsWriterOptions>(options =>
     options.FilePath = settingsWritePath);
+
+// ── Shared abstractions (BuildingBlocks) ────────────────────────────────────
+// IDateTimeProvider is the shared time seam from StillOps.BuildingBlocks.
+// Consumed by StarterSettingsWriter and available to any future service that
+// needs controllable time for testing or audit metadata.
+builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
 builder.Services.AddSingleton<IStarterSettingsWriter, StarterSettingsWriter>();
 

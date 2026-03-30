@@ -5,8 +5,16 @@ namespace StillOps.AppHost.IntegrationTests;
 
 /// <summary>
 /// Integration tests that start the full Aspire topology and verify acceptance criteria.
-/// Requires Docker — Story 1.2 adds a PostgreSQL container for the identity database.
-/// The AppHost provisions the container automatically via Aspire.Hosting.PostgreSQL.
+/// Requires Docker — the AppHost provisions PostgreSQL automatically via Aspire.Hosting.PostgreSQL.
+///
+/// Reusable pattern for future bounded-context integration tests:
+///   1. Create the topology:  DistributedApplicationTestingBuilder.CreateAsync&lt;Projects.StillOps_AppHost&gt;()
+///   2. Build and start:      appHost.BuildAsync() then app.StartAsync()
+///   3. Wait for readiness:   app.ResourceNotifications.WaitForResourceHealthyAsync("stillops-web")
+///   4. Create an HTTP client: app.CreateHttpClient("stillops-web")
+///   5. Authenticate if needed using cookie or bearer token flows shown in existing tests.
+/// Per-module integration test projects under tests/integration/ can reference the AppHost
+/// project and follow this same pattern to test module-specific behavior against real infrastructure.
 /// </summary>
 public sealed class AppHostIntegrationTests
 {
