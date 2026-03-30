@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StillOps.Commerce.Application\StillOps.Commerce.Application.csproj" />
+    <ProjectReference Include="..\..\..\shared\StillOps.BuildingBlocks\StillOps.BuildingBlocks.csproj" />
+  </ItemGroup>
+
+</Project>

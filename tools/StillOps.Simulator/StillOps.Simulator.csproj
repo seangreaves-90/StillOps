@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="Google.Protobuf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\shared\StillOps.Integration.Protos\StillOps.Integration.Protos.csproj" />
+    <ProjectReference Include="..\..\src\shared\StillOps.Integration.Events\StillOps.Integration.Events.csproj" />
+  </ItemGroup>
+
+</Project>

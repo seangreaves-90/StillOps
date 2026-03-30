@@ -1,5 +1,8 @@
 @inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+<a class="skip-to-main" href="#main-content">Skip to main content</a>
 
 <div class="shell-wrapper">
     <nav class="shell-rail" aria-label="Primary navigation">
@@ -8,7 +11,7 @@
         </div>
         <ul class="shell-nav-list" role="list">
             <li>
-                <NavLink class="shell-nav-link" href="/shell" Match="NavLinkMatch.All" aria-current="page">
+                <NavLink class="shell-nav-link" href="/shell" Match="NavLinkMatch.All">
                     Home
                 </NavLink>
             </li>
@@ -27,13 +30,19 @@
 
     <div class="shell-content">
         <header class="shell-header">
-            <div class="shell-identity">
+            <div class="shell-header-title" aria-live="polite">
+                <p class="shell-section-label">Current section</p>
+                <h1 class="shell-header-heading">@CurrentPageTitle</h1>
+            </div>
+
+            <div class="shell-identity" aria-label="Signed-in user controls">
                 <AuthorizeView>
                     <Authorized>
                         <span class="signed-in-name" aria-label="Signed in as @context.User.Identity?.Name">
                             @context.User.Identity?.Name
                         </span>
                         <form method="post" action="/logout" class="signout-form">
+                            <AntiforgeryToken />
                             <button type="submit" class="btn-signout">Sign Out</button>
                         </form>
                     </Authorized>
@@ -46,3 +55,36 @@
         </main>
     </div>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private string CurrentPageTitle => GetPageTitle();
+
+    private string GetPageTitle()
+    {
+        string relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        string normalizedPath = "/" + relativePath.Split('?', '#')[0].Trim('/');
+
+        return normalizedPath switch
+        {
+            "/shell" => "Workspace Home",
+            "/shell/health" => "Platform Health",
+            "/shell/configuration" => "Configuration",
+            _ => "StillOps Shell"
+        };
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

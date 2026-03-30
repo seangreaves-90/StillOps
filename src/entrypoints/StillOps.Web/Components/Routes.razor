@@ -1,14 +1,32 @@
 <Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
             <NotAuthorized>
-                @* The cookie auth middleware handles the redirect to /login for unauthenticated users.
-                   This NotAuthorized slot handles the case of authenticated-but-unauthorized access. *@
-                <section aria-labelledby="access-denied-heading">
-                    <h1 id="access-denied-heading">Access Denied</h1>
-                    <p>You do not have permission to view this page.</p>
-                    <a href="/shell">Return to workspace home</a>
-                </section>
+                @* The cookie auth middleware handles the redirect to /login for unauthenticated
+                   users (OnRedirectToLogin event). This NotAuthorized slot handles the case of
+                   authenticated-but-unauthorized access (AC4): the user is signed in but does
+                   not hold the InternalOperator or InternalAdmin role. *@
+                <AuthorizeView Context="authState">
+                    <Authorized>
+                        <section aria-labelledby="access-denied-heading">
+                            <h1 id="access-denied-heading">Access Denied</h1>
+                            <p>
+                                You are signed in as <strong>@authState.User.Identity?.Name</strong>
+                                but do not have the required role to access the operator workspace.
+                            </p>
+                            <form method="post" action="/logout">
+                                <AntiforgeryToken />
+                                <button type="submit">Sign out and try a different account</button>
+                            </form>
+                        </section>
+                    </Authorized>
+                    <NotAuthorized Context="_">
+                        @* Should not reach here — middleware redirects unauthenticated
+                           UI requests to /login before the router runs. *@
+                        <p>Redirecting to sign-in...</p>
+                        <script>window.location.href = '/login';</script>
+                    </NotAuthorized>
+                </AuthorizeView>
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

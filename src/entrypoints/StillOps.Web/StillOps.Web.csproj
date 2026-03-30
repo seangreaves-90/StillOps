@@ -9,7 +9,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenIddict.AspNetCore" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\hosting\StillOps.ServiceDefaults\StillOps.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\shared\StillOps.Web.Shared\StillOps.Web.Shared.csproj" />
+    <ProjectReference Include="..\..\modules\Distillery\StillOps.Distillery.Api\StillOps.Distillery.Api.csproj" />
+    <ProjectReference Include="..\..\modules\Commerce\StillOps.Commerce.Api\StillOps.Commerce.Api.csproj" />
+    <ProjectReference Include="..\..\modules\Payments\StillOps.Payments.Api\StillOps.Payments.Api.csproj" />
+    <ProjectReference Include="..\..\modules\Partner\StillOps.Partner.Api\StillOps.Partner.Api.csproj" />
   </ItemGroup>
 
 </Project>

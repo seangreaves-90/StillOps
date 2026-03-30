@@ -2,6 +2,8 @@
 @attribute [Authorize(Policy = "InternalShell")]
 @rendermode InteractiveServer
 @layout ShellLayout
+@using Microsoft.Extensions.Diagnostics.HealthChecks
+@inject HealthCheckService HealthChecks
 
 <PageTitle>Home — StillOps</PageTitle>
 
@@ -15,8 +17,10 @@
     </AuthorizeView>
 
     <div class="status-card" role="region" aria-label="Platform status">
-        <span class="status-chip status-chip--healthy" aria-label="Platform status: Healthy">Healthy</span>
-        <p>All starter services are available.</p>
+        <span class="status-chip status-chip--@OverallStatus.ToLowerInvariant()"
+              aria-label="Platform status: @OverallStatus">@OverallStatus</span>
+        <p>@SummaryMessage</p>
+        <p><strong>Trust state:</strong> @TrustState</p>
     </div>
 
     <nav class="next-actions" aria-label="Next actions">
@@ -32,3 +36,31 @@
         <p>Internal shell, platform health, and starter runtime configuration.</p>
     </aside>
 </section>
+
+@code {
+    private string OverallStatus { get; set; } = "Unknown";
+    private string SummaryMessage { get; set; } =
+        PlatformHealthPresentation.GetSummaryMessage("Unknown", hasLastKnownState: false);
+    private string TrustState { get; set; } =
+        PlatformHealthPresentation.GetTrustState("Unknown", hasLastKnownState: false);
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            HealthReport report = await HealthChecks.CheckHealthAsync();
+            IReadOnlyList<PlatformHealthItemViewModel> items =
+                PlatformHealthPresentation.BuildFreshItems(report, DateTimeOffset.Now);
+
+            OverallStatus = PlatformHealthPresentation.GetOverallStatus(items);
+            SummaryMessage = PlatformHealthPresentation.GetSummaryMessage(OverallStatus, hasLastKnownState: true);
+            TrustState = PlatformHealthPresentation.GetTrustState(OverallStatus, hasLastKnownState: true);
+        }
+        catch
+        {
+            OverallStatus = "Unknown";
+            SummaryMessage = PlatformHealthPresentation.GetSummaryMessage(OverallStatus, hasLastKnownState: false);
+            TrustState = PlatformHealthPresentation.GetTrustState(OverallStatus, hasLastKnownState: false);
+        }
+    }
+}

@@ -8,8 +8,59 @@
     <Project Path="src/hosting/StillOps.AppHost/StillOps.AppHost.csproj" />
     <Project Path="src/hosting/StillOps.ServiceDefaults/StillOps.ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/src/shared/">
+    <Project Path="src/shared/StillOps.BuildingBlocks/StillOps.BuildingBlocks.csproj" />
+    <Project Path="src/shared/StillOps.Integration.Events/StillOps.Integration.Events.csproj" />
+    <Project Path="src/shared/StillOps.Integration.Protos/StillOps.Integration.Protos.csproj" />
+    <Project Path="src/shared/StillOps.Web.Shared/StillOps.Web.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/modules/" />
+  <Folder Name="/src/modules/Distillery/">
+    <Project Path="src/modules/Distillery/StillOps.Distillery.Domain/StillOps.Distillery.Domain.csproj" />
+    <Project Path="src/modules/Distillery/StillOps.Distillery.Application/StillOps.Distillery.Application.csproj" />
+    <Project Path="src/modules/Distillery/StillOps.Distillery.Infrastructure/StillOps.Distillery.Infrastructure.csproj" />
+    <Project Path="src/modules/Distillery/StillOps.Distillery.Api/StillOps.Distillery.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/modules/Commerce/">
+    <Project Path="src/modules/Commerce/StillOps.Commerce.Domain/StillOps.Commerce.Domain.csproj" />
+    <Project Path="src/modules/Commerce/StillOps.Commerce.Application/StillOps.Commerce.Application.csproj" />
+    <Project Path="src/modules/Commerce/StillOps.Commerce.Infrastructure/StillOps.Commerce.Infrastructure.csproj" />
+    <Project Path="src/modules/Commerce/StillOps.Commerce.Api/StillOps.Commerce.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/modules/Payments/">
+    <Project Path="src/modules/Payments/StillOps.Payments.Domain/StillOps.Payments.Domain.csproj" />
+    <Project Path="src/modules/Payments/StillOps.Payments.Application/StillOps.Payments.Application.csproj" />
+    <Project Path="src/modules/Payments/StillOps.Payments.Infrastructure/StillOps.Payments.Infrastructure.csproj" />
+    <Project Path="src/modules/Payments/StillOps.Payments.Api/StillOps.Payments.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/modules/Partner/">
+    <Project Path="src/modules/Partner/StillOps.Partner.Domain/StillOps.Partner.Domain.csproj" />
+    <Project Path="src/modules/Partner/StillOps.Partner.Application/StillOps.Partner.Application.csproj" />
+    <Project Path="src/modules/Partner/StillOps.Partner.Infrastructure/StillOps.Partner.Infrastructure.csproj" />
+    <Project Path="src/modules/Partner/StillOps.Partner.Api/StillOps.Partner.Api.csproj" />
+  </Folder>
   <Folder Name="/tests/" />
+  <Folder Name="/tests/unit/">
+    <Project Path="tests/unit/StillOps.Distillery.UnitTests/StillOps.Distillery.UnitTests.csproj" />
+    <Project Path="tests/unit/StillOps.Commerce.UnitTests/StillOps.Commerce.UnitTests.csproj" />
+    <Project Path="tests/unit/StillOps.Payments.UnitTests/StillOps.Payments.UnitTests.csproj" />
+    <Project Path="tests/unit/StillOps.Partner.UnitTests/StillOps.Partner.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/tests/integration/">
     <Project Path="tests/integration/StillOps.AppHost.IntegrationTests/StillOps.AppHost.IntegrationTests.csproj" />
+    <Project Path="tests/integration/StillOps.Distillery.IntegrationTests/StillOps.Distillery.IntegrationTests.csproj" />
+    <Project Path="tests/integration/StillOps.Commerce.IntegrationTests/StillOps.Commerce.IntegrationTests.csproj" />
+    <Project Path="tests/integration/StillOps.Payments.IntegrationTests/StillOps.Payments.IntegrationTests.csproj" />
+    <Project Path="tests/integration/StillOps.Partner.IntegrationTests/StillOps.Partner.IntegrationTests.csproj" />
+    <Project Path="tests/integration/StillOps.Ingestion.IntegrationTests/StillOps.Ingestion.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/architecture/">
+    <Project Path="tests/architecture/StillOps.Architecture.Tests/StillOps.Architecture.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/web/">
+    <Project Path="tests/web/StillOps.Web.Tests/StillOps.Web.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/StillOps.Simulator/StillOps.Simulator.csproj" />
   </Folder>
 </Solution>

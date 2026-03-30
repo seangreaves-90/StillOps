@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StillOps.Payments.Domain\StillOps.Payments.Domain.csproj" />
+    <ProjectReference Include="..\..\..\shared\StillOps.BuildingBlocks\StillOps.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\..\shared\StillOps.Integration.Events\StillOps.Integration.Events.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,16 +1,221 @@
 @page "/shell/configuration"
-@attribute [Authorize(Policy = "InternalShell")]
+@attribute [Authorize(Policy = "InternalAdmin")]
 @rendermode InteractiveServer
 @layout ShellLayout
+@using Microsoft.Extensions.Options
+@using StillOps.ServiceDefaults.Configuration
+@using StillOps.Web.Configuration
+@inject IOptionsMonitor<StarterSettings> SettingsMonitor
+@inject IStarterSettingsWriter SettingsWriter
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Configuration — StillOps</PageTitle>
 
 <section class="shell-page" aria-labelledby="page-heading">
     <h1 id="page-heading" class="page-heading">Configuration</h1>
 
-    <p class="placeholder-note">
-        The starter runtime configuration editor is implemented in Story 1.5.
-        Settings are backed by <code>stillops-operational-settings.json</code> with
-        reload-capable binding — changes take effect without restarting the application.
-    </p>
+    @{
+        var liveSettings = SettingsMonitor.CurrentValue;
+    }
+    @if (liveSettings.LastUpdatedUtc.HasValue)
+    {
+        <p class="config-last-updated">
+            Active settings last updated by <strong>@liveSettings.LastUpdatedBy</strong>
+            at <time datetime="@liveSettings.LastUpdatedUtc.Value.ToString("o")">
+                @liveSettings.LastUpdatedUtc.Value.ToString("HH:mm:ss") UTC
+            </time>
+        </p>
+    }
+
+    @if (_hasAttemptedSave && _saveResult is not null)
+    {
+        @if (_saveResult.IsSuccess)
+        {
+            <div class="config-banner config-banner--success" role="status" aria-live="polite">
+                <p class="config-banner__message">Settings saved successfully.</p>
+                <p class="config-banner__meta">
+                    Saved by <strong>@_saveResult.SavedBy</strong>
+                    at <time datetime="@_saveResult.SavedAtUtc!.Value.ToString("o")">
+                        @_saveResult.SavedAtUtc!.Value.ToString("HH:mm:ss") UTC
+                    </time>
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="config-banner config-banner--failure" role="alert" aria-live="assertive">
+                <p class="config-banner__message">Save failed: @_saveResult.ErrorMessage</p>
+                <p class="config-banner__next-action">
+                    Your entered values are preserved. Verify file system access to the settings path and try again.
+                </p>
+            </div>
+        }
+    }
+
+    <EditForm EditContext="_editContext" OnSubmit="HandleSubmitAsync" aria-label="Starter settings form">
+
+        <fieldset class="config-fieldset">
+            <legend class="config-legend">Sensor Warning Thresholds</legend>
+
+            <div class="config-field @(HasError(nameof(StarterSettingsFormModel.TemperatureCelsius)) ? "config-field--error" : "")">
+                <label class="config-label" for="temp-celsius">Temperature (°C)</label>
+                <InputNumber id="temp-celsius" class="config-input"
+                             @bind-Value="_model.TemperatureCelsius"
+                             aria-describedby="@(HasError(nameof(StarterSettingsFormModel.TemperatureCelsius)) ? "temp-celsius-error" : null)" />
+                @if (HasError(nameof(StarterSettingsFormModel.TemperatureCelsius)))
+                {
+                    <p id="temp-celsius-error" class="config-field__error" role="alert">
+                        @_errors[nameof(StarterSettingsFormModel.TemperatureCelsius)]
+                    </p>
+                }
+            </div>
+
+            <div class="config-field @(HasError(nameof(StarterSettingsFormModel.HumidityPercent)) ? "config-field--error" : "")">
+                <label class="config-label" for="humidity-percent">Humidity (%)</label>
+                <InputNumber id="humidity-percent" class="config-input"
+                             @bind-Value="_model.HumidityPercent"
+                             aria-describedby="@(HasError(nameof(StarterSettingsFormModel.HumidityPercent)) ? "humidity-percent-error" : null)" />
+                @if (HasError(nameof(StarterSettingsFormModel.HumidityPercent)))
+                {
+                    <p id="humidity-percent-error" class="config-field__error" role="alert">
+                        @_errors[nameof(StarterSettingsFormModel.HumidityPercent)]
+                    </p>
+                }
+            </div>
+
+            <div class="config-field @(HasError(nameof(StarterSettingsFormModel.AbvPercent)) ? "config-field--error" : "")">
+                <label class="config-label" for="abv-percent">ABV (%)</label>
+                <InputNumber id="abv-percent" class="config-input"
+                             @bind-Value="_model.AbvPercent"
+                             aria-describedby="@(HasError(nameof(StarterSettingsFormModel.AbvPercent)) ? "abv-percent-error" : null)" />
+                @if (HasError(nameof(StarterSettingsFormModel.AbvPercent)))
+                {
+                    <p id="abv-percent-error" class="config-field__error" role="alert">
+                        @_errors[nameof(StarterSettingsFormModel.AbvPercent)]
+                    </p>
+                }
+            </div>
+        </fieldset>
+
+        <fieldset class="config-fieldset">
+            <legend class="config-legend">Sensor Heartbeat Timeout</legend>
+
+            <div class="config-field @(HasError(nameof(StarterSettingsFormModel.SensorHeartbeatTimeoutSeconds)) ? "config-field--error" : "")">
+                <label class="config-label" for="heartbeat-timeout">Timeout (seconds)</label>
+                <InputNumber id="heartbeat-timeout" class="config-input"
+                             @bind-Value="_model.SensorHeartbeatTimeoutSeconds"
+                             aria-describedby="@(HasError(nameof(StarterSettingsFormModel.SensorHeartbeatTimeoutSeconds)) ? "heartbeat-timeout-error" : null)" />
+                @if (HasError(nameof(StarterSettingsFormModel.SensorHeartbeatTimeoutSeconds)))
+                {
+                    <p id="heartbeat-timeout-error" class="config-field__error" role="alert">
+                        @_errors[nameof(StarterSettingsFormModel.SensorHeartbeatTimeoutSeconds)]
+                    </p>
+                }
+            </div>
+        </fieldset>
+
+        <fieldset class="config-fieldset">
+            <legend class="config-legend">Starter Alerting Rules</legend>
+
+            <div class="config-field config-field--checkbox">
+                <InputCheckbox id="alert-missed-heartbeats"
+                               @bind-Value="_model.AlertOnMissedHeartbeats" />
+                <label class="config-label" for="alert-missed-heartbeats">Alert on missed heartbeats</label>
+            </div>
+
+            <div class="config-field config-field--checkbox">
+                <InputCheckbox id="alert-threshold-exceedance"
+                               @bind-Value="_model.AlertOnThresholdExceedance" />
+                <label class="config-label" for="alert-threshold-exceedance">Alert on threshold exceedance</label>
+            </div>
+        </fieldset>
+
+        <div class="config-actions">
+            <button type="submit" class="config-btn config-btn--primary" disabled="@_isSaving">
+                @(_isSaving ? "Saving\u2026" : "Save Settings")
+            </button>
+            <button type="button" class="config-btn config-btn--secondary"
+                    @onclick="ResetToCurrentValues" disabled="@_isSaving">
+                Reset to Current Values
+            </button>
+        </div>
+
+    </EditForm>
 </section>
+
+@code {
+    private static readonly string[] NumericFieldNames =
+    [
+        nameof(StarterSettingsFormModel.TemperatureCelsius),
+        nameof(StarterSettingsFormModel.HumidityPercent),
+        nameof(StarterSettingsFormModel.AbvPercent),
+        nameof(StarterSettingsFormModel.SensorHeartbeatTimeoutSeconds)
+    ];
+
+    private StarterSettingsFormModel _model = new();
+    private EditContext _editContext = null!;
+    private Dictionary<string, string> _errors = [];
+    private SaveResult? _saveResult;
+    private bool _hasAttemptedSave;
+    private bool _isSaving;
+
+    protected override void OnInitialized()
+    {
+        _model = StarterSettingsFormModel.FromSettings(SettingsMonitor.CurrentValue);
+        _editContext = new EditContext(_model);
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        // Finding 4: always clear stale result so success banner cannot persist alongside
+        // inline errors from a subsequent invalid submission.
+        _saveResult = null;
+        _hasAttemptedSave = true;
+
+        // Finding 3: merge custom validation with Blazor InputNumber parse errors so
+        // a cleared or non-numeric field is blocked before any write is attempted.
+        _errors = StarterSettingsValidator.ValidateAll(_model);
+
+        foreach (string fieldName in NumericFieldNames)
+        {
+            if (!_errors.ContainsKey(fieldName))
+            {
+                FieldIdentifier fieldId = _editContext.Field(fieldName);
+                string? parseError = _editContext.GetValidationMessages(fieldId).FirstOrDefault();
+                if (parseError is not null)
+                    _errors[fieldName] = parseError;
+            }
+        }
+
+        if (_errors.Count > 0)
+        {
+            // Validation failure: entered values are preserved in the form, no write attempted.
+            return;
+        }
+
+        _isSaving = true;
+
+        try
+        {
+            AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            string savedBy = authState.User.Identity?.Name ?? "unknown";
+            _saveResult = await SettingsWriter.SaveAsync(_model, savedBy);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private void ResetToCurrentValues()
+    {
+        _model = StarterSettingsFormModel.FromSettings(SettingsMonitor.CurrentValue);
+        // Recreate the EditContext to clear any parse errors Blazor is tracking.
+        _editContext = new EditContext(_model);
+        _errors = [];
+        _saveResult = null;
+        _hasAttemptedSave = false;
+    }
+
+    private bool HasError(string fieldName) => _errors.ContainsKey(fieldName);
+}

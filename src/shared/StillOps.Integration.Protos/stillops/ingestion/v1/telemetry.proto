@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package stillops.ingestion.v1;
+
+option csharp_namespace = "StillOps.Integration.Protos.Ingestion.V1";
+
+// Placeholder — message types and RPC methods arrive in Epic 3.
+service TelemetryIngestion {
+}

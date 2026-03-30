@@ -15,9 +15,65 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0" />
   </ItemGroup>
 
+  <!-- OpenIddict -->
+  <ItemGroup Label="OpenIddict">
+    <PackageVersion Include="OpenIddict.AspNetCore" Version="7.4.0" />
+    <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="7.4.0" />
+  </ItemGroup>
+
+  <!-- EF Core + PostgreSQL -->
+  <ItemGroup Label="EntityFramework">
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.0" />
+  </ItemGroup>
+
+  <!-- Aspire database hosting -->
+  <ItemGroup Label="AspireDatabase">
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.2" />
+  </ItemGroup>
+
   <!-- Worker service -->
   <ItemGroup Label="Extensions">
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
+  </ItemGroup>
+
+  <!-- Wolverine messaging (in-process commands/events, later RabbitMQ transport) -->
+  <ItemGroup Label="Wolverine">
+    <PackageVersion Include="WolverineFx" Version="5.19.1" />
+    <PackageVersion Include="WolverineFx.Http" Version="5.19.1" />
+  </ItemGroup>
+
+  <!-- Marten event store (Payments bounded context) -->
+  <ItemGroup Label="Marten">
+    <PackageVersion Include="Marten" Version="8.23.0" />
+  </ItemGroup>
+
+  <!-- Aspire component integrations -->
+  <ItemGroup Label="AspireComponents">
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.0" />
+    <PackageVersion Include="Aspire.StackExchange.Redis" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.2.0" />
+  </ItemGroup>
+
+  <!-- gRPC (sensor ingestion protocol) -->
+  <ItemGroup Label="gRPC">
+    <PackageVersion Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageVersion Include="Grpc.Core.Api" Version="2.71.0" />
+    <PackageVersion Include="Google.Protobuf" Version="3.30.2" />
+    <PackageVersion Include="Grpc.Tools" Version="2.71.0" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.71.0" />
+  </ItemGroup>
+
+  <!-- Architecture testing -->
+  <ItemGroup Label="ArchitectureTesting">
+    <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
+  </ItemGroup>
+
+  <!-- Blazor testing -->
+  <ItemGroup Label="BlazorTesting">
+    <PackageVersion Include="bunit" Version="2.0.66" />
   </ItemGroup>
 
   <!-- Testing -->

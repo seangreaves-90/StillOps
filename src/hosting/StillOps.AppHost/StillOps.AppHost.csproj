@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\entrypoints\StillOps.Web\StillOps.Web.csproj" IsAspireProjectResource="true" />
     <ProjectReference Include="..\..\entrypoints\StillOps.Ingestion\StillOps.Ingestion.csproj" IsAspireProjectResource="true" />
   </ItemGroup>

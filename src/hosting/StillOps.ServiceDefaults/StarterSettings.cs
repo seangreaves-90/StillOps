@@ -1,10 +1,11 @@
-namespace StillOps.Web.Configuration;
+namespace StillOps.ServiceDefaults.Configuration;
 
 /// <summary>
-/// Epic 1 starter settings set. Backed by a reload-capable JSON configuration source
-/// so changes can become active without restarting the application (FR58 / AC 6).
-/// Inject <see cref="Microsoft.Extensions.Options.IOptionsMonitor{T}"/> — not IOptions&lt;T&gt; —
-/// to receive live-reloaded values.
+/// Epic 1 starter settings set. Shared across all services that need read access to
+/// the runtime configuration. Backed by a reload-capable JSON configuration source so
+/// changes become active without restarting either the web host or the ingestion worker.
+/// Inject <see cref="Microsoft.Extensions.Options.IOptionsMonitor{T}"/> — not
+/// IOptions&lt;T&gt; — to receive live-reloaded values.
 /// </summary>
 public sealed class StarterSettings
 {
@@ -18,6 +19,16 @@ public sealed class StarterSettings
     public int SensorHeartbeatTimeoutSeconds { get; init; } = 30;
 
     public StarterAlertingRules StarterAlertingRules { get; init; } = new();
+
+    /// <summary>
+    /// Set by <c>StarterSettingsWriter</c> on every successful save. Populated in the
+    /// persisted JSON file so both the web host and ingestion worker receive the metadata
+    /// after their <see cref="Microsoft.Extensions.Options.IOptionsMonitor{T}"/> reloads.
+    /// </summary>
+    public DateTimeOffset? LastUpdatedUtc { get; init; }
+
+    /// <summary>Username of the administrator who last saved these settings.</summary>
+    public string? LastUpdatedBy { get; init; }
 }
 
 public sealed class SensorWarningThresholds

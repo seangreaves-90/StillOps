@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Marten" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StillOps.Payments.Domain\StillOps.Payments.Domain.csproj" />
+    <ProjectReference Include="..\StillOps.Payments.Application\StillOps.Payments.Application.csproj" />
+    <ProjectReference Include="..\..\..\shared\StillOps.BuildingBlocks\StillOps.BuildingBlocks.csproj" />
+  </ItemGroup>
+
+</Project>

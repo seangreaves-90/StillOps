@@ -2,15 +2,156 @@
 @attribute [Authorize(Policy = "InternalShell")]
 @rendermode InteractiveServer
 @layout ShellLayout
+@implements IAsyncDisposable
+@using Microsoft.Extensions.Diagnostics.HealthChecks
+@inject HealthCheckService HealthChecks
 
 <PageTitle>Health — StillOps</PageTitle>
 
 <section class="shell-page" aria-labelledby="page-heading">
     <h1 id="page-heading" class="page-heading">Platform Health</h1>
 
-    <p class="placeholder-note">
-        Health monitoring UI is implemented in Story 1.4.
-        The starter health checks are already registered and available at
-        <code>/health</code> and <code>/alive</code> in the development environment.
-    </p>
+    <div class="health-summary-banner health-summary-banner--@OverallStatus.ToLowerInvariant()"
+         role="status" aria-live="polite" aria-atomic="true">
+        <span class="status-chip status-chip--@OverallStatus.ToLowerInvariant()"
+              aria-label="Overall status: @OverallStatus">@OverallStatus</span>
+        <p class="health-summary-message">@SummaryMessage</p>
+        <p class="health-summary-trust"><strong>Trust state:</strong> @OverallTrustState</p>
+        @if (_lastChecked.HasValue)
+        {
+            <p class="health-last-checked">Last checked:
+                <time datetime="@_lastChecked.Value.ToString("o")">@_lastChecked.Value.ToString("HH:mm:ss")</time>
+            </p>
+        }
+    </div>
+
+    @if (_isStale)
+    {
+        <div class="health-stale-notice" role="alert">
+            Health data could not be refreshed. Current trust state is shown inline so page context remains visible.
+        </div>
+    }
+
+    @if (_hasLoaded)
+    {
+        <ul class="health-item-list" aria-label="Health check results">
+            @foreach (PlatformHealthItemViewModel item in _items)
+            {
+                <li class="health-item health-item--@item.Status.ToLowerInvariant()">
+                    <div class="health-item-header">
+                        <span class="health-item-name">@item.DisplayName</span>
+                        <span class="status-chip status-chip--@item.Status.ToLowerInvariant()"
+                              aria-label="@item.DisplayName status: @item.Status">@item.Status</span>
+                    </div>
+                    <div class="health-item-metadata">
+                        <p class="health-metadata"><strong>Trust state:</strong> @item.TrustState</p>
+                        <p class="health-metadata">
+                            <strong>Last checked:</strong>
+                            @if (item.LastChecked.HasValue)
+                            {
+                                <time datetime="@item.LastChecked.Value.ToString("o")">@item.LastChecked.Value.ToString("HH:mm:ss")</time>
+                            }
+                            else
+                            {
+                                <span>Unavailable</span>
+                            }
+                        </p>
+                    </div>
+                    @if (item.Impact is not null)
+                    {
+                        <p class="health-impact">@item.Impact</p>
+                    }
+                    @if (item.NextAction is not null)
+                    {
+                        <p class="health-next-action"><strong>Safe action:</strong> @item.NextAction</p>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else if (!_isStale)
+    {
+        <p class="health-loading">Checking platform health...</p>
+    }
 </section>
+
+@code {
+    private IReadOnlyList<PlatformHealthItemViewModel> _items = [];
+    private DateTimeOffset? _lastChecked;
+    private bool _hasLoaded;
+    private bool _isStale;
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource? _cts;
+    private Task? _pollTask;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cts = new CancellationTokenSource();
+        await RefreshHealthAsync(_cts.Token);
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        _pollTask = PollAsync(_cts.Token);
+    }
+
+    private async Task PollAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (await _timer!.WaitForNextTickAsync(ct))
+            {
+                await RefreshHealthAsync(ct);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private async Task RefreshHealthAsync(CancellationToken ct)
+    {
+        try
+        {
+            HealthReport report = await HealthChecks.CheckHealthAsync(cancellationToken: ct);
+            _lastChecked = DateTimeOffset.Now;
+            _items = PlatformHealthPresentation.BuildFreshItems(report, _lastChecked.Value);
+            _hasLoaded = true;
+            _isStale = false;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            _isStale = true;
+            _items = PlatformHealthPresentation.BuildStaleItems(_items);
+            _hasLoaded = true;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_cts is not null)
+        {
+            await _cts.CancelAsync();
+            _cts.Dispose();
+        }
+
+        if (_pollTask is not null)
+        {
+            try
+            {
+                await _pollTask;
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        _timer?.Dispose();
+    }
+
+    private string OverallStatus => PlatformHealthPresentation.GetOverallStatus(_items);
+
+    private string SummaryMessage =>
+        PlatformHealthPresentation.GetSummaryMessage(OverallStatus, _lastChecked.HasValue);
+
+    private string OverallTrustState =>
+        PlatformHealthPresentation.GetTrustState(OverallStatus, _lastChecked.HasValue);
+}

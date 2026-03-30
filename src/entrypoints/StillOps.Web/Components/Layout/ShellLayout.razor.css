@@ -1,0 +1,226 @@
+/* Skip-to-main link — visually hidden until focused (keyboard accessibility) */
+.skip-to-main {
+    position: absolute;
+    left: -9999px;
+    top: 1rem;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background-color: #17212b;
+    color: #eef2f0;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.skip-to-main:focus-visible {
+    left: 1rem;
+    outline: 2px solid #b56a3a;
+    outline-offset: 2px;
+}
+
+/* Shell wrapper — full-viewport flex row: nav rail + content */
+.shell-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f5;
+}
+
+/* Navigation rail — left sidebar */
+.shell-rail {
+    width: 220px;
+    min-width: 220px;
+    background-color: #17212b;
+    color: #eef2f0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+/* Brand mark */
+.shell-brand {
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #eef2f0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Navigation list */
+.shell-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+    flex: 1;
+}
+
+.shell-nav-list li {
+    margin: 0;
+}
+
+/* Navigation links */
+.shell-nav-link {
+    display: block;
+    padding: 0.625rem 1rem;
+    color: rgba(238, 242, 240, 0.75);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    border-left: 3px solid transparent;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.shell-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+    color: #eef2f0;
+}
+
+/* Active/current location — NavLink adds .active automatically */
+.shell-nav-link.active {
+    background-color: rgba(255, 255, 255, 0.11);
+    color: #eef2f0;
+    border-left-color: #b56a3a;
+    font-weight: 600;
+}
+
+/* Visible focus ring for keyboard navigation */
+.shell-nav-link:focus-visible {
+    outline: 2px solid #b56a3a;
+    outline-offset: -2px;
+}
+
+/* Shell content — right column: header + main */
+.shell-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Header bar */
+.shell-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dde2df;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.25rem;
+    flex-shrink: 0;
+}
+
+.shell-header-title {
+    min-width: 0;
+    flex: 1;
+}
+
+.shell-section-label {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.shell-header-heading {
+    margin: 0.125rem 0 0;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    color: #17212b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Identity section */
+.shell-identity {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.875rem;
+    min-width: 0;
+    flex-shrink: 0;
+}
+
+.signed-in-name {
+    font-size: 0.875rem;
+    color: #495057;
+    min-width: 0;
+    max-width: min(24rem, 34vw);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Sign-out form */
+.signout-form {
+    margin: 0;
+    display: flex;
+}
+
+.btn-signout {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    background-color: transparent;
+    color: #495057;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-signout:hover {
+    background-color: #e9ecef;
+    color: #212529;
+    border-color: #adb5bd;
+}
+
+/* Visible focus ring on sign-out for keyboard users */
+.btn-signout:focus-visible {
+    outline: 2px solid #b56a3a;
+    outline-offset: 2px;
+}
+
+/* Main content area */
+.shell-main {
+    flex: 1;
+    padding: 1.75rem 2rem;
+    overflow-y: auto;
+}
+
+/* Responsive — tablet (600–899 px): narrow the rail, keep layout intact */
+@media (max-width: 899px) {
+    .shell-rail {
+        width: 180px;
+        min-width: 180px;
+    }
+
+    .shell-header {
+        padding: 0 1rem;
+    }
+
+    .shell-section-label {
+        font-size: 0.6875rem;
+    }
+
+    .shell-header-heading {
+        font-size: 1rem;
+    }
+
+    .signed-in-name {
+        max-width: 12rem;
+    }
+
+    .shell-main {
+        padding: 1.25rem 1.25rem;
+    }
+}

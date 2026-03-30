@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\hosting\StillOps.AppHost\StillOps.AppHost.csproj" />
+    <ProjectReference Include="..\..\..\src\hosting\StillOps.ServiceDefaults\StillOps.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\..\src\entrypoints\StillOps.Web\StillOps.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

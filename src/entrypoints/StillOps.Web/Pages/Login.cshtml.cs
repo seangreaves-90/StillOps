@@ -2,13 +2,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using StillOps.Web.Identity;
+using StillOps.Web.Identity.Models;
 
 namespace StillOps.Web.Pages;
 
-public sealed partial class LoginModel(IConfiguration configuration, ILogger<LoginModel> logger)
-    : PageModel
+public sealed partial class LoginModel(
+    ApplicationDbContext context,
+    IPasswordHasher<ApplicationUser> hasher,
+    ILogger<LoginModel> logger) : PageModel
 {
     [BindProperty]
     public InputModel Input { get; set; } = new();
@@ -27,18 +33,12 @@ public sealed partial class LoginModel(IConfiguration configuration, ILogger<Log
             return Page();
         }
 
-        var devUsername = configuration["DevCredentials:Username"];
-        var devPassword = configuration["DevCredentials:Password"];
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Username == Input.Username);
 
-        if (string.IsNullOrEmpty(devUsername) || string.IsNullOrEmpty(devPassword))
-        {
-            LogCredentialsNotConfigured(logger);
-            ModelState.AddModelError(string.Empty, "Authentication is not configured. Contact your administrator.");
-            return Page();
-        }
-
-        if (!string.Equals(Input.Username, devUsername, StringComparison.Ordinal) ||
-            !string.Equals(Input.Password, devPassword, StringComparison.Ordinal))
+        if (user is null ||
+            hasher.VerifyHashedPassword(user, user.PasswordHash, Input.Password)
+                == PasswordVerificationResult.Failed)
         {
             LogFailedLoginAttempt(logger, Input.Username);
             ModelState.AddModelError(string.Empty, "Invalid username or password.");
@@ -47,26 +47,24 @@ public sealed partial class LoginModel(IConfiguration configuration, ILogger<Log
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, Input.Username),
-            new(ClaimTypes.Role, "InternalOperator"),
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Role, user.Role),
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
+        // The browser receives only this HttpOnly session cookie — the raw
+        // OpenIddict token stays server-side (BFF pattern, AC3).
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal,
             new AuthenticationProperties { IsPersistent = false });
 
-        LogSuccessfulLogin(logger, Input.Username);
+        LogSuccessfulLogin(logger, user.Username);
 
         return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : "/shell");
     }
-
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "DevCredentials are not configured. Add DevCredentials:Username and DevCredentials:Password to appsettings.Development.json.")]
-    private static partial void LogCredentialsNotConfigured(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Failed login attempt for username: {Username}")]

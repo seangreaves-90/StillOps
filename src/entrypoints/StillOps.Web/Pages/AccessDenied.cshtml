@@ -1,0 +1,29 @@
+@page "/access-denied"
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Access Denied — StillOps</title>
+    <link rel="stylesheet" href="~/app.css" asp-append-version="true" />
+</head>
+<body>
+<main class="login-page">
+    <div class="login-card">
+        <h1 id="access-denied-heading" class="login-title">Access Denied</h1>
+        <p>
+            You are signed in as <strong>@User.Identity?.Name</strong>
+            but do not have the required role to access the operator workspace.
+        </p>
+
+        <form method="post" action="/logout">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn-primary">Sign out and try a different account</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>
